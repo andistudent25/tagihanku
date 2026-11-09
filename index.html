@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f8fc" id="app-theme-color">
+  <meta name="description" content="TagihanKu membantu mengelola tagihan, pengingat jatuh tempo, analitik, dan laporan keuangan dalam satu dashboard.">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="application-name" content="TagihanKu">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="TagihanKu">
+  <title>TagihanKu — Dashboard Pengelolaan Tagihan</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <script src="backend-config.js" defer></script>
+  <script src="backend-client.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#konten">Lewati ke konten</a>
+  <noscript><div class="noscript-notice">TagihanKu memerlukan JavaScript untuk menjalankan dashboard demo. Aktifkan JavaScript pada browser, lalu muat ulang halaman.</div></noscript>
+
+  <header class="site-header" id="beranda">
+    <div class="container header-inner">
+      <a class="brand" href="#beranda" aria-label="TagihanKu, kembali ke beranda">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" role="img"><path d="M11 7.5h13.2L30 13v19.5H11z"/><path d="M24 7.5V14h6M16 20h9M16 25h9"/></svg>
+        </span>
+        <span class="brand-name">tagihan<span>ku.</span></span>
+      </a>
+
+      <button class="icon-button nav-toggle" id="nav-toggle" type="button" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="primary-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="header-context" aria-hidden="true">
+        <span>WORKSPACE</span>
+        <strong>Ringkasan keuangan</strong>
+      </div>
+
+      <div class="header-actions">
+        <button class="header-icon-button" id="theme-toggle" type="button" aria-label="Aktifkan tema gelap" title="Ganti tema">◐</button>
+        <button class="header-icon-button notification-header-button" id="notification-open" type="button" aria-label="Buka notifikasi, 0 belum dibaca" title="Buka pusat notifikasi">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg>
+          <span class="notification-badge" id="notification-badge" hidden>0</span>
+        </button>
+        <button class="header-profile-button" id="profile-open" type="button" aria-label="Buka profil pengguna">
+          <span class="profile-avatar-mini" id="header-profile-avatar">PD</span>
+          <span id="header-profile-label">Masuk</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="primary-nav app-sidebar" id="primary-nav" aria-label="Navigasi utama">
+    <a class="brand sidebar-brand" href="#beranda" aria-label="TagihanKu, kembali ke beranda">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40"><path d="M11 7.5h13.2L30 13v19.5H11z"/><path d="M24 7.5V14h6M16 20h9M16 25h9"/></svg>
+      </span>
+      <span class="brand-name">tagihan<span>ku.</span></span>
+    </a>
+    <div class="sidebar-section-label">MENU UTAMA</div>
+    <a class="nav-link is-active" href="#beranda"><span class="nav-icon" aria-hidden="true">⌂</span><span>Beranda</span></a>
+    <a class="nav-link" href="#tagihan"><span class="nav-icon" aria-hidden="true">▤</span><span>Tagihan</span></a>
+    <a class="nav-link" href="#analitik"><span class="nav-icon" aria-hidden="true">▥</span><span>Analitik</span></a>
+    <div class="sidebar-section-label sidebar-section-spaced">PENGELOLAAN</div>
+    <a class="nav-link" href="#notifikasi"><span class="nav-icon" aria-hidden="true">♢</span><span>Notifikasi</span><span class="sidebar-nav-badge" id="sidebar-notification-count" hidden>0</span></a>
+    <a class="nav-link" href="#jadwal"><span class="nav-icon" aria-hidden="true">◷</span><span>Jadwal</span></a>
+    <a class="nav-link" href="#kalender"><span class="nav-icon" aria-hidden="true">▦</span><span>Kalender</span></a>
+    <div class="sidebar-section-label sidebar-section-spaced">LAINNYA</div>
+    <a class="nav-link" href="#asisten"><span class="nav-icon" aria-hidden="true">✧</span><span>Asisten pintar</span></a>
+    <a class="nav-link" href="#riwayat"><span class="nav-icon" aria-hidden="true">↺</span><span>Riwayat transaksi</span></a>
+    <a class="nav-link" href="#preferensi"><span class="nav-icon" aria-hidden="true">⚙</span><span>Pengaturan</span></a>
+    <a class="nav-link" href="#bantuan"><span class="nav-icon" aria-hidden="true">?</span><span>Bantuan</span></a>
+    <div class="sidebar-footer-card">
+      <span class="sidebar-footer-icon" aria-hidden="true">✦</span>
+      <strong>Tagihan lebih teratur</strong>
+      <p>Pantau jadwal dan pembayaran dari satu tempat.</p>
+      <a href="#jadwal">Lihat jadwal <span aria-hidden="true">↗</span></a>
+    </div>
+  </nav>
+  <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Tutup menu navigasi" tabindex="-1"></button>
+
+  <main id="konten">
+    <section class="hero-section section-space" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <div class="eyebrow"><span class="eyebrow-pulse"></span> CARA BARU MENGATUR KEUANGAN</div>
+          <h1 id="hero-title">Tagihan beres,<br><span>pikiran pun bebas.</span></h1>
+          <p class="hero-description">Pantau semua tagihan rutinmu dalam satu tempat. Lebih teratur, lebih tenang, dan tidak ada tanggal jatuh tempo yang terlewat.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#tagihan">Lihat tagihan <span aria-hidden="true">↗</span></a>
+            <button class="text-button js-login" type="button"><span class="play-icon" aria-hidden="true">▶</span> Mulai sekarang</button>
+          </div>
+          <div class="hero-proof">
+            <div class="avatar-stack" aria-hidden="true"><span>AN</span><span>DS</span><span>RA</span><span>+</span></div>
+            <p><strong>Lebih simpel setiap bulan</strong><br><span>Semua kebutuhan rutin, satu dashboard.</span></p>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal" aria-label="Ilustrasi ringkasan tagihan bulanan">
+          <div class="visual-orbit orbit-one"></div>
+          <div class="visual-orbit orbit-two"></div>
+          <div class="visual-spark spark-one">✦</div><div class="visual-spark spark-two">✧</div>
+          <div class="floating-note note-top"><span class="note-icon note-green">✓</span><span><strong>Pembayaran berhasil</strong><small>Internet rumah · Baru saja</small></span></div>
+          <div class="dashboard-card">
+            <div class="dash-card-top"><span>Ringkasan bulanan</span><span class="dash-dots">•••</span></div>
+            <div class="dash-total-label">Total tagihan bulan ini</div>
+            <div class="dash-total">Rp <span data-count="650000">0</span></div>
+            <div class="dash-chart" aria-hidden="true">
+              <div class="chart-line"></div>
+              <div class="chart-bars"><i style="--bar:38%"></i><i style="--bar:54%"></i><i style="--bar:46%"></i><i style="--bar:74%"></i><i style="--bar:61%"></i><i style="--bar:88%"></i><i style="--bar:68%"></i></div>
+            </div>
+            <div class="dash-legend"><span><i class="legend-dot purple"></i> Terbayar</span><span><i class="legend-dot mint"></i> Menunggu</span></div>
+          </div>
+          <div class="floating-note note-bottom"><span class="note-icon note-purple">↗</span><span><strong>3 tagihan terpantau</strong><small>Jangan sampai terlewat!</small></span></div>
+          <div class="visual-glow"></div>
+        </div>
+      </div>
+      <div class="hero-bottom-line" aria-hidden="true"></div>
+    </section>
+
+    <section class="container stats-section" aria-label="Ringkasan tagihan">
+      <article class="stat-card reveal">
+        <div class="stat-icon stat-purple"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16M8 14h3"/></svg></div>
+        <div><p>Total tagihan bulan ini</p><h2>Rp <span data-count="650000">0</span></h2><small class="stat-caption">Dari 3 layanan aktif</small></div>
+      </article>
+      <article class="stat-card reveal">
+        <div class="stat-icon stat-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <div><p>Sudah dibayarkan</p><h2>Rp <span data-count="50000">0</span></h2><small class="stat-caption positive" id="paid-caption">● 1 tagihan lunas</small></div>
+      </article>
+      <article class="stat-card reveal">
+        <div class="stat-icon stat-orange"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div><p>Menunggu pembayaran</p><h2>Rp <span data-count="600000">0</span></h2><small class="stat-caption warning" id="pending-caption">● 2 tagihan belum dibayar</small></div>
+      </article>
+    </section>
+
+    <section class="container insights-section" id="jadwal" aria-labelledby="insights-title">
+      <div class="section-heading reveal">
+        <div><div class="eyebrow eyebrow-muted">LEBIH SIAP SETIAP BULAN</div><h2 id="insights-title">Pantau <span>jatuh tempo.</span></h2><p>Ketahui tagihan yang perlu diselesaikan dan ke mana pengeluaranmu pergi.</p></div>
+        <span class="insight-live"><i></i> Diperbarui otomatis</span>
+      </div>
+
+      <div class="insights-grid">
+        <article class="insight-panel due-panel reveal" aria-labelledby="due-title">
+          <div class="insight-panel-head">
+            <div><span class="panel-kicker">AGENDA PEMBAYARAN</span><h3 id="due-title">Jadwal terdekat</h3></div>
+            <span class="panel-icon panel-icon-purple" aria-hidden="true">◷</span>
+          </div>
+          <p class="panel-description">Hitung mundur menuju tanggal pembayaran berikutnya.</p>
+          <div class="due-list" id="due-list">
+            <div class="due-item" data-due-id="internet">
+              <span class="due-service-icon service-internet" aria-hidden="true">⌁</span>
+              <span class="due-item-copy"><strong>Internet Fiber</strong><small><time datetime="2026-11-15">15 November 2026</time></small></span>
+              <span class="due-countdown" data-due-countdown="2026-11-15">6 hari lagi</span>
+            </div>
+            <div class="due-item" data-due-id="electricity">
+              <span class="due-service-icon service-electric" aria-hidden="true">ϟ</span>
+              <span class="due-item-copy"><strong>Listrik Pascabayar</strong><small><time datetime="2026-11-20">20 November 2026</time></small></span>
+              <span class="due-countdown" data-due-countdown="2026-11-20">11 hari lagi</span>
+            </div>
+          </div>
+          <div class="due-footnote"><span aria-hidden="true">✦</span> Pengingat ini berjalan di browser saat halaman dibuka.</div>
+        </article>
+
+        <article class="insight-panel spending-panel reveal" aria-labelledby="spending-title">
+          <div class="insight-panel-head">
+            <div><span class="panel-kicker">RINGKASAN PENGELUARAN</span><h3 id="spending-title">Per kategori</h3></div>
+            <span class="panel-icon panel-icon-green" aria-hidden="true">↗</span>
+          </div>
+          <div class="spending-total"><strong id="spending-total">Rp 650.000</strong><span>total bulan ini</span></div>
+          <div class="payment-progress" aria-label="Progres pembayaran tagihan">
+            <div class="payment-progress-head"><span>Progres pembayaran</span><strong id="payment-progress-label">7,7%</strong></div>
+            <div class="payment-progress-track"><span id="payment-progress-bar" style="width:7.69%"></span></div>
+            <small id="payment-progress-note">1 dari 3 layanan sudah lunas</small>
+          </div>
+          <div class="spending-bars" id="spending-bars">
+            <div class="spending-row" data-spending-id="internet"><div class="spending-label"><span><i class="spending-dot dot-purple"></i>Internet</span><strong>Rp 385.000</strong></div><div class="spending-track"><span class="spending-fill fill-purple" style="width:59.23%"></span></div></div>
+            <div class="spending-row" data-spending-id="electricity"><div class="spending-label"><span><i class="spending-dot dot-orange"></i>Listrik</span><strong>Rp 215.000</strong></div><div class="spending-track"><span class="spending-fill fill-orange" style="width:33.08%"></span></div></div>
+            <div class="spending-row" data-spending-id="water"><div class="spending-label"><span><i class="spending-dot dot-blue"></i>Air PDAM</span><strong>Rp 50.000</strong></div><div class="spending-track"><span class="spending-fill fill-blue" style="width:7.69%"></span></div></div>
+          </div>
+          <p class="spending-note">Persentase dihitung dari seluruh tagihan yang tercatat.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- v1.3: kalender interaktif dan asisten pintar berbasis aturan lokal. -->
+    <section class="container planner-section section-space" id="kalender" aria-labelledby="planner-title">
+      <div class="section-heading reveal">
+        <div><div class="eyebrow eyebrow-muted">RENCANAKAN PEMBAYARAN</div><h2 id="planner-title">Kalender & <span>asisten pintar.</span></h2><p>Lihat tanggal penting dan dapatkan saran berdasarkan data demo di browser ini.</p></div>
+        <span class="insight-live"><i></i> Berjalan secara lokal</span>
+      </div>
+
+      <div class="planner-grid">
+        <article class="planner-panel calendar-panel reveal" aria-labelledby="calendar-title">
+          <div class="planner-panel-head">
+            <div><span class="panel-kicker">AGENDA BULANAN</span><h3 id="calendar-title">Kalender tagihan</h3></div>
+            <div class="calendar-controls">
+              <button class="calendar-nav" id="calendar-prev" type="button" aria-label="Bulan sebelumnya">‹</button>
+              <button class="calendar-nav" id="calendar-next" type="button" aria-label="Bulan berikutnya">›</button>
+            </div>
+          </div>
+          <div class="calendar-month-row"><strong id="calendar-month-label">November 2026</strong><button class="calendar-today" id="calendar-today" type="button">Hari ini</button></div>
+          <div class="calendar-weekdays" role="row" aria-label="Hari dalam seminggu">
+            <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
+          </div>
+          <div class="calendar-grid" id="calendar-grid" role="grid" aria-label="Kalender tagihan"></div>
+          <div class="calendar-legend" aria-label="Keterangan kalender">
+            <span><i class="legend-pending"></i> Belum dibayar</span><span><i class="legend-paid"></i> Lunas</span><span><i class="legend-today"></i> Hari ini</span>
+          </div>
+          <div class="calendar-events" aria-live="polite">
+            <div class="calendar-events-head"><div><span class="panel-kicker">DETAIL TANGGAL</span><h4 id="calendar-selected-label">Senin, 9 November 2026</h4></div><span class="calendar-event-count" id="calendar-event-count">0 tagihan</span></div>
+            <div id="calendar-events-list" class="calendar-events-list"><p class="calendar-empty">Tidak ada tagihan jatuh tempo pada tanggal ini.</p></div>
+          </div>
+        </article>
+
+        <article class="planner-panel assistant-panel reveal" id="asisten" aria-labelledby="assistant-title">
+          <div class="planner-panel-head">
+            <div><span class="panel-kicker">TAGIHANKU ASSISTANT</span><h3 id="assistant-title">Teman atur tagihanmu</h3></div>
+            <span class="assistant-avatar" aria-hidden="true">✦</span>
+          </div>
+          <div class="assistant-welcome">
+            <div class="assistant-status"><i></i> Asisten lokal aktif</div>
+            <p>Hai! Aku membantu mengurutkan tagihan berdasarkan nominal dan tanggal jatuh tempo. Apa yang ingin kamu ketahui?</p>
+          </div>
+          <div class="assistant-overview" aria-label="Ringkasan oleh asisten">
+            <div><span>Total belum dibayar</span><strong id="assistant-pending-total">Rp 600.000</strong></div>
+            <div><span>Tagihan menunggu</span><strong id="assistant-pending-count">2 layanan</strong></div>
+          </div>
+          <div class="assistant-priority" id="assistant-priority" aria-live="polite">
+            <span class="priority-icon" aria-hidden="true">↗</span>
+            <div><small>REKOMENDASI UTAMA</small><strong id="assistant-priority-title">Internet Fiber</strong><p id="assistant-priority-description">Jatuh tempo paling dekat. Siapkan pembayaran sebelum tanggal 15 November.</p></div>
+          </div>
+          <div class="assistant-questions" role="group" aria-label="Pertanyaan cepat">
+            <button type="button" data-ask="Tagihan mana yang harus saya bayar dulu?">Bayar yang mana dulu?</button>
+            <button type="button" data-ask="Berapa total tagihan saya yang belum dibayar?">Total belum dibayar?</button>
+            <button type="button" data-ask="Tagihan apa yang jatuh tempo minggu ini?">Jatuh tempo minggu ini?</button>
+          </div>
+          <form class="assistant-form" id="assistant-form">
+            <label class="sr-only" for="assistant-question">Tulis pertanyaan tentang tagihan</label>
+            <input id="assistant-question" name="question" type="text" maxlength="180" placeholder="Tanya tentang tagihanmu..." autocomplete="off" required>
+            <button type="submit" aria-label="Kirim pertanyaan">↑</button>
+          </form>
+          <div class="assistant-answer" id="assistant-answer" role="status" aria-live="polite"><span class="answer-label">JAWABAN ASISTEN</span><p>Mulai dengan memilih pertanyaan cepat atau ketik pertanyaanmu di atas.</p></div>
+          <p class="assistant-disclaimer">Asisten menggunakan data pratinjau pada halaman ini. Masuk untuk melihat ringkasan akun pribadi.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="container bills-section section-space" id="tagihan" aria-labelledby="bills-title">
+      <div class="section-heading reveal">
+        <div><div class="eyebrow eyebrow-muted">SEMUA DALAM KENDALI</div><h2 id="bills-title">Tagihan <span>bulan ini.</span></h2><p>Pilih tagihan yang ingin kamu selesaikan.</p></div>
+        <div class="bill-heading-actions"><span class="month-pill"><span aria-hidden="true">▦</span> November 2026</span><button class="button button-outline button-small pay-selected" type="button" disabled>Bayar pilihan <span class="selection-count">0</span></button></div>
+      </div>
+
+      <div class="bill-filters" role="group" aria-label="Filter daftar tagihan">
+        <button class="bill-filter is-current" type="button" data-bill-filter="all" aria-pressed="true">Semua <span>3</span></button>
+        <button class="bill-filter" type="button" data-bill-filter="pending" aria-pressed="false">Belum dibayar <span>2</span></button>
+        <button class="bill-filter" type="button" data-bill-filter="paid" aria-pressed="false">Lunas <span>1</span></button>
+      </div>
+      <div class="bill-grid">
+        <article class="bill-card reveal" data-bill-id="internet" data-amount="385000" data-status="pending">
+          <div class="bill-card-head"><div class="service-logo service-internet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 8.5a14 14 0 0 1 19 0M5.5 12a9.5 9.5 0 0 1 13 0M8.5 15.5a4.5 4.5 0 0 1 7 0M12 19h.01"/></svg></div><span class="status status-pending">Belum dibayar</span></div>
+          <div class="bill-provider">INTERNET RUMAH</div><h3>Internet Fiber</h3><p class="bill-meta">Paket keluarga · 50 Mbps</p>
+          <div class="bill-amount-label">Jumlah tagihan</div><div class="bill-amount">Rp 385.000</div>
+          <div class="bill-divider"></div><div class="bill-due"><span>Jatuh tempo</span><strong class="due-soon">15 Nov 2026</strong></div>
+          <button class="button button-select select-bill" type="button" data-id="internet" aria-pressed="false">Pilih tagihan <span aria-hidden="true">＋</span></button>
+        </article>
+
+        <article class="bill-card reveal" data-bill-id="electricity" data-amount="215000" data-status="pending">
+          <div class="bill-card-head"><div class="service-logo service-electric"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13.5 2-9 12h6l-.5 8 9-12h-6z"/></svg></div><span class="status status-pending">Belum dibayar</span></div>
+          <div class="bill-provider">LISTRIK</div><h3>Listrik Pascabayar</h3><p class="bill-meta">ID pelanggan · 5510 2048</p>
+          <div class="bill-amount-label">Jumlah tagihan</div><div class="bill-amount">Rp 215.000</div>
+          <div class="bill-divider"></div><div class="bill-due"><span>Jatuh tempo</span><strong>20 Nov 2026</strong></div>
+          <button class="button button-select select-bill" type="button" data-id="electricity" aria-pressed="false">Pilih tagihan <span aria-hidden="true">＋</span></button>
+        </article>
+
+        <article class="bill-card bill-paid reveal" data-bill-id="water" data-amount="50000" data-status="paid">
+          <div class="bill-card-head"><div class="service-logo service-water"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5Z"/><path d="M9 16a3 3 0 0 0 3 3"/></svg></div><span class="status status-paid">Lunas</span></div>
+          <div class="bill-provider">AIR BERSIH</div><h3>Air PDAM</h3><p class="bill-meta">Pelanggan · 0083 1902</p>
+          <div class="bill-amount-label">Jumlah tagihan</div><div class="bill-amount">Rp 50.000</div>
+          <div class="bill-divider"></div><div class="bill-due"><span>Dibayarkan</span><strong class="paid-date">03 Nov 2026</strong></div>
+          <button class="button button-paid" type="button" disabled><span aria-hidden="true">✓</span> Sudah dibayar</button>
+        </article>
+      </div>
+
+      <div class="selection-bar" id="selection-bar" aria-live="polite">
+        <div><span class="selection-bar-icon">✓</span><span><strong><span class="selection-count">0</span> tagihan dipilih</strong><small>Pembayaran simulasi — tidak ada uang yang dipotong.</small></span></div>
+        <button class="button button-primary pay-selected" type="button" disabled>Lanjut bayar <span aria-hidden="true">→</span></button>
+      </div>
+    </section>
+
+
+    <!-- v1.5: analitik pengeluaran dan laporan keuangan dari transaksi demo. -->
+    <section class="container analytics-section section-space" id="analitik" aria-labelledby="analytics-title">
+      <div class="section-heading reveal">
+        <div>
+          <div class="eyebrow eyebrow-muted">PAHAMI POLA PENGELUARAN</div>
+          <h2 id="analytics-title">Analitik <span>keuanganmu.</span></h2>
+          <p>Ringkasan tagihan, pembayaran, dan laporan berdasarkan data yang tersimpan di browser ini.</p>
+        </div>
+        <span class="insight-live"><i></i> Dihitung dari data lokal</span>
+      </div>
+
+      <div class="analytics-toolbar reveal" aria-label="Kontrol laporan analitik">
+        <label class="analytics-month-control" for="analytics-month">
+          <span>Periode laporan</span>
+          <input id="analytics-month" type="month" aria-label="Pilih bulan laporan">
+        </label>
+        <div class="analytics-actions">
+          <button class="button button-outline button-small" id="analytics-current-month" type="button">Bulan ini</button>
+          <button class="button button-outline button-small" id="analytics-export" type="button">Ekspor CSV <span aria-hidden="true">↓</span></button>
+          <button class="button button-primary button-small" id="analytics-print" type="button">Cetak laporan PDF <span aria-hidden="true">↗</span></button>
+        </div>
+      </div>
+
+      <div class="analytics-kpis" aria-label="Indikator keuangan periode terpilih">
+        <article class="analytics-kpi analytics-kpi-purple reveal">
+          <span class="analytics-kpi-icon" aria-hidden="true">▤</span>
+          <div><span>Total tagihan tercatat</span><strong id="analytics-total-billed">Rp 650.000</strong><small id="analytics-billed-caption">3 layanan pada periode ini</small></div>
+        </article>
+        <article class="analytics-kpi analytics-kpi-green reveal">
+          <span class="analytics-kpi-icon" aria-hidden="true">✓</span>
+          <div><span>Sudah dibayarkan</span><strong id="analytics-total-paid">Rp 50.000</strong><small id="analytics-paid-caption">1 transaksi berhasil</small></div>
+        </article>
+        <article class="analytics-kpi analytics-kpi-orange reveal">
+          <span class="analytics-kpi-icon" aria-hidden="true">◷</span>
+          <div><span>Belum dibayarkan</span><strong id="analytics-total-pending">Rp 600.000</strong><small id="analytics-pending-caption">2 layanan menunggu</small></div>
+        </article>
+        <article class="analytics-kpi analytics-kpi-blue reveal">
+          <span class="analytics-kpi-icon" aria-hidden="true">↗</span>
+          <div><span>Transaksi berhasil</span><strong id="analytics-transaction-count">1</strong><small>Jumlah transaksi lunas</small></div>
+        </article>
+      </div>
+
+      <div class="analytics-main-grid">
+        <article class="analytics-panel analytics-trend-panel reveal" aria-labelledby="analytics-trend-title">
+          <div class="analytics-panel-heading">
+            <div><span class="panel-kicker">ARUS KAS KELUAR</span><h3 id="analytics-trend-title">Tren pembayaran</h3><p>Jumlah yang sudah dibayarkan per bulan.</p></div>
+            <span class="analytics-panel-icon analytics-icon-purple" aria-hidden="true">▥</span>
+          </div>
+          <div class="analytics-chart-summary"><strong id="analytics-trend-total">Rp 50.000</strong><span id="analytics-trend-caption">Pembayaran pada periode terpilih</span></div>
+          <div class="analytics-bar-chart" id="analytics-month-chart" role="img" aria-label="Grafik pembayaran enam bulan terakhir"></div>
+          <p class="analytics-chart-footnote" id="analytics-chart-note">Grafik memakai transaksi dengan status berhasil. Bulan tanpa transaksi ditampilkan nol.</p>
+        </article>
+
+        <article class="analytics-panel analytics-category-panel reveal" aria-labelledby="analytics-category-title">
+          <div class="analytics-panel-heading">
+            <div><span class="panel-kicker">KOMPOSISI TAGIHAN</span><h3 id="analytics-category-title">Per kategori</h3><p>Bandingkan nominal setiap layanan.</p></div>
+            <span class="analytics-panel-icon analytics-icon-green" aria-hidden="true">◉</span>
+          </div>
+          <div class="analytics-category-total"><strong id="analytics-category-total">Rp 650.000</strong><span id="analytics-category-caption">Total tagihan periode ini</span></div>
+          <div class="analytics-category-list" id="analytics-category-list">
+            <p class="analytics-empty-inline">Belum ada data kategori untuk periode ini.</p>
+          </div>
+          <p class="analytics-chart-footnote" id="analytics-category-note">Kategori bulan berjalan dihitung dari tagihan yang tercatat.</p>
+        </article>
+      </div>
+
+      <div class="analytics-insight-grid">
+        <article class="analytics-panel analytics-compare-panel reveal" aria-labelledby="analytics-compare-title">
+          <div class="analytics-panel-heading">
+            <div><span class="panel-kicker">PERBANDINGAN BULAN</span><h3 id="analytics-compare-title">Dibanding bulan sebelumnya</h3></div>
+            <span class="analytics-panel-icon analytics-icon-orange" aria-hidden="true">↕</span>
+          </div>
+          <div class="analytics-compare-value"><strong id="analytics-compare-delta">—</strong><span id="analytics-compare-status">Belum cukup data untuk perbandingan.</span></div>
+          <p id="analytics-compare-description">Perbandingan menggunakan transaksi yang berhasil pada dua periode berturut-turut.</p>
+        </article>
+        <article class="analytics-panel analytics-insight-panel reveal" aria-labelledby="analytics-insight-title">
+          <div class="analytics-panel-heading">
+            <div><span class="panel-kicker">RINGKASAN OTOMATIS</span><h3 id="analytics-insight-title">Insight keuangan</h3></div>
+            <span class="analytics-panel-icon analytics-icon-purple" aria-hidden="true">✦</span>
+          </div>
+          <p id="analytics-insight-text" class="analytics-insight-text">Ringkasan akan diperbarui mengikuti transaksi dan tagihan demo.</p>
+          <span class="analytics-insight-tag" id="analytics-insight-tag">Analisis lokal</span>
+        </article>
+      </div>
+
+      <article class="analytics-panel analytics-report-panel reveal" id="analytics-report" aria-labelledby="analytics-report-title">
+        <div class="analytics-panel-heading analytics-report-heading">
+          <div><span class="panel-kicker">RINCIAN KEUANGAN</span><h3 id="analytics-report-title">Laporan transaksi</h3><p id="analytics-report-period">Rincian periode terpilih.</p></div>
+          <span class="report-demo-label">PRATINJAU</span>
+        </div>
+        <div class="analytics-report-table-wrap">
+          <table class="analytics-report-table">
+            <thead><tr><th scope="col">Tanggal</th><th scope="col">ID transaksi</th><th scope="col">Layanan</th><th scope="col">Metode</th><th scope="col">Status</th><th scope="col">Nominal</th></tr></thead>
+            <tbody id="analytics-report-body"></tbody>
+          </table>
+        </div>
+        <p class="analytics-report-empty" id="analytics-report-empty" hidden>Belum ada transaksi pada periode ini. Pilih bulan lain atau catat pembayaran demo untuk mulai membuat laporan.</p>
+        <div class="analytics-report-footer"><span id="analytics-report-count">0 transaksi ditampilkan</span><strong id="analytics-report-total">Total berhasil: Rp 0</strong></div>
+      </article>
+      <p class="analytics-disclaimer">Laporan ini dibuat dari data simulasi dan penyimpanan lokal browser. Angka bukan rekening koran, bukti pajak, atau laporan keuangan resmi.</p>
+    </section>
+
+    <!-- v1.6: pusat notifikasi dan pengingat lokal. Pemeriksaan hanya aktif saat halaman dibuka. -->
+    <section class="container notifications-section section-space" id="notifikasi" aria-labelledby="notifications-title">
+      <div class="section-heading reveal">
+        <div><div class="eyebrow eyebrow-muted">JANGAN LEWATKAN TANGGAL PENTING</div><h2 id="notifications-title">Pengingat & <span>notifikasi.</span></h2><p>Atur waktu pengingat dan lihat semua aktivitas penting dari tagihan demo.</p></div>
+        <span class="insight-live"><i></i> Berjalan di browser ini</span>
+      </div>
+
+      <div class="notifications-layout">
+        <article class="notification-panel reminder-settings-panel reveal" aria-labelledby="reminder-settings-title">
+          <div class="notification-panel-heading">
+            <div><span class="panel-kicker">PREFERENSI PENGINGAT</span><h3 id="reminder-settings-title">Atur pengingatmu</h3><p>Pilih kapan TagihanKu mengingatkanmu.</p></div>
+            <span class="notification-panel-icon" aria-hidden="true">◷</span>
+          </div>
+          <div class="notification-switches">
+            <label class="settings-switch-row" for="pref-reminders"><span><strong>Aktifkan pengingat otomatis</strong><small>Periksa jatuh tempo saat halaman terbuka.</small></span><input class="switch-input" id="pref-reminders" type="checkbox" checked><i class="switch-track" aria-hidden="true"></i></label>
+            <label class="settings-switch-row" for="pref-overdue-reminders"><span><strong>Ingatkan tagihan terlambat</strong><small>Buat pengingat untuk tagihan yang melewati jatuh tempo.</small></span><input class="switch-input" id="pref-overdue-reminders" type="checkbox" checked><i class="switch-track" aria-hidden="true"></i></label>
+          </div>
+          <div class="reminder-control-grid">
+            <label class="reminder-field" for="reminder-lead-days"><span>Pengingat sebelum jatuh tempo</span><select id="reminder-lead-days"><option value="1">1 hari sebelumnya</option><option value="3" selected>3 hari sebelumnya</option><option value="7">7 hari sebelumnya</option></select></label>
+            <label class="reminder-field" for="reminder-time"><span>Waktu pemeriksaan</span><select id="reminder-time"><option value="08:00">08.00</option><option value="09:00" selected>09.00</option><option value="12:00">12.00</option><option value="18:00">18.00</option></select></label>
+          </div>
+          <div class="reminder-setting-actions">
+            <button class="button button-outline button-small" id="browser-notification-enable" type="button">Aktifkan notifikasi browser</button>
+            <button class="button button-primary button-small" id="test-reminder" type="button">Kirim pengingat tes <span aria-hidden="true">↗</span></button>
+          </div>
+          <p class="notification-setting-status" id="reminder-status-label" role="status">Pengingat otomatis aktif. Pemeriksaan berjalan saat halaman terbuka setelah pukul 09.00.</p>
+          <p class="notification-disclaimer">Catatan: pengingat lokal tidak berjalan ketika halaman/browser ditutup. Notifikasi browser memerlukan izin dan koneksi aman (HTTPS atau localhost). Notifikasi latar belakang saat situs tertutup memerlukan layanan push dan server.</p>
+        </article>
+
+        <article class="notification-panel notification-center-panel reveal" aria-labelledby="notification-center-title">
+          <div class="notification-panel-heading notification-center-heading">
+            <div><span class="panel-kicker">PUSAT AKTIVITAS</span><h3 id="notification-center-title">Notifikasi kamu</h3><p><strong id="notification-unread-count">0 belum dibaca</strong> · tersimpan di perangkat ini</p></div>
+            <span class="notification-panel-icon notification-panel-icon-purple" aria-hidden="true">♢</span>
+          </div>
+          <div class="notification-toolbar">
+            <div class="notification-filters" role="group" aria-label="Filter notifikasi">
+              <button class="notification-filter is-current" type="button" data-notification-filter="all" aria-pressed="true">Semua</button>
+              <button class="notification-filter" type="button" data-notification-filter="unread" aria-pressed="false">Belum dibaca</button>
+            </div>
+            <div class="notification-actions"><button class="text-button" id="mark-all-notifications-read" type="button">Tandai semua dibaca</button><button class="text-button notification-clear" id="clear-notifications" type="button">Hapus semua</button></div>
+          </div>
+          <div class="notification-list" id="notification-list" aria-live="polite" aria-relevant="additions text">
+            <div class="notification-empty"><span aria-hidden="true">✦</span><strong>Belum ada notifikasi</strong><p>Pengingat tagihan akan muncul di sini saat memenuhi jadwal.</p></div>
+          </div>
+          <div class="notification-center-footer"><span id="notification-total-count">0 notifikasi</span><span>Data disimpan lokal</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="history-section section-space" id="riwayat" aria-labelledby="history-title">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div><div class="eyebrow eyebrow-muted">CATATAN PEMBAYARAN</div><h2 id="history-title">Riwayat <span>transaksi.</span></h2><p>Lihat kembali aktivitas pembayaranmu.</p></div>
+          <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input type="search" id="history-search" placeholder="Cari transaksi..." aria-label="Cari transaksi"></label>
+        </div>
+        <div class="history-panel reveal">
+          <div class="history-toolbar"><div class="filter-tabs" role="group" aria-label="Filter transaksi"><button class="filter-tab is-current" type="button" data-filter="all" aria-pressed="true">Semua</button><button class="filter-tab" type="button" data-filter="paid" aria-pressed="false">Berhasil</button><button class="filter-tab" type="button" data-filter="pending" aria-pressed="false">Menunggu</button></div><div class="history-tools"><span class="history-period">Periode: November 2026</span><button class="button button-outline button-small" id="export-history" type="button">Ekspor CSV <span aria-hidden="true">↓</span></button><button class="text-button history-reset" id="reset-demo" type="button">Reset demo</button></div></div>
+          <div class="table-wrap"><table class="history-table"><thead><tr><th scope="col">ID Transaksi</th><th scope="col">Layanan</th><th scope="col">Tanggal</th><th scope="col">Metode</th><th scope="col">Nominal</th><th scope="col">Status</th><th scope="col">Bukti</th></tr></thead><tbody id="history-body"></tbody></table></div>
+          <p class="empty-state" id="empty-state" hidden>Tidak ada transaksi yang cocok dengan pencarianmu.</p>
+          <div class="history-foot"><span>Menampilkan <strong id="visible-count">3</strong> transaksi</span><span class="secure-note"><span>✦</span> Masuk untuk menyimpan data secara pribadi</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container settings-section section-space" id="preferensi" aria-labelledby="settings-title">
+      <div class="section-heading reveal">
+        <div><div class="eyebrow eyebrow-muted">ATUR SESUAI CARA KERJAMU</div><h2 id="settings-title">Dashboard <span>milikmu.</span></h2><p>Personalisasi tampilan, kenyamanan, dan profil demo di perangkat ini.</p></div>
+        <span class="insight-live"><i></i> Preferensi tersimpan lokal</span>
+      </div>
+      <div class="settings-grid">
+        <article class="settings-panel reveal" aria-labelledby="appearance-title">
+          <div class="settings-panel-heading"><span class="settings-icon">◐</span><div><h3 id="appearance-title">Tampilan</h3><p>Pilih suasana yang paling nyaman.</p></div></div>
+          <div class="theme-options" role="group" aria-label="Pilih tema warna">
+            <button type="button" class="theme-option" data-theme-choice="light" aria-pressed="false"><span class="theme-preview theme-preview-light" aria-hidden="true"><i></i><i></i><i></i></span><strong>Terang</strong><small>Light mode</small></button>
+            <button type="button" class="theme-option" data-theme-choice="dark" aria-pressed="false"><span class="theme-preview theme-preview-dark" aria-hidden="true"><i></i><i></i><i></i></span><strong>Gelap</strong><small>Dark mode</small></button>
+            <button type="button" class="theme-option" data-theme-choice="system" aria-pressed="false"><span class="theme-preview theme-preview-system" aria-hidden="true"><i></i><i></i><i></i></span><strong>Sistem</strong><small>Ikuti perangkat</small></button>
+          </div>
+        </article>
+
+        <article class="settings-panel reveal" aria-labelledby="dashboard-preferences-title">
+          <div class="settings-panel-heading"><span class="settings-icon settings-icon-green">⚙</span><div><h3 id="dashboard-preferences-title">Preferensi dashboard</h3><p>Atur elemen dan animasi yang ditampilkan.</p></div></div>
+          <div class="settings-switch-list">
+            <label class="settings-switch-row" for="pref-reduced-motion"><span><strong>Kurangi animasi</strong><small>Nonaktifkan gerakan dekoratif dan transisi.</small></span><input class="switch-input" id="pref-reduced-motion" type="checkbox"><i class="switch-track" aria-hidden="true"></i></label>
+            <label class="settings-switch-row" for="pref-compact"><span><strong>Mode ringkas</strong><small>Kurangi jarak antarbagian dan kartu.</small></span><input class="switch-input" id="pref-compact" type="checkbox"><i class="switch-track" aria-hidden="true"></i></label>
+            <label class="settings-switch-row" for="pref-hero"><span><strong>Tampilkan ilustrasi utama</strong><small>Sembunyikan ilustrasi hero bila ingin tampilan simpel.</small></span><input class="switch-input" id="pref-hero" type="checkbox" checked><i class="switch-track" aria-hidden="true"></i></label>
+            <label class="settings-switch-row" for="pref-assistant"><span><strong>Tampilkan Smart Assistant</strong><small>Atur visibilitas panel asisten lokal.</small></span><input class="switch-input" id="pref-assistant" type="checkbox" checked><i class="switch-track" aria-hidden="true"></i></label>
+          </div>
+          <button class="text-button settings-reset" id="reset-preferences" type="button">Kembalikan preferensi awal ↺</button>
+        </article>
+
+        <article class="settings-panel settings-profile-card reveal" aria-labelledby="settings-profile-title">
+          <div class="settings-panel-heading"><span class="settings-icon settings-icon-orange">◎</span><div><h3 id="settings-profile-title">Profil pengguna</h3><p>Identitas demo yang ditampilkan di dashboard.</p></div></div>
+          <div class="profile-summary">
+            <span class="profile-avatar-large" id="settings-profile-avatar">PD</span>
+            <div><strong id="settings-profile-name">Pengunjung</strong><small id="settings-profile-email">Belum masuk</small><span class="profile-local-tag">Akun belum terhubung</span></div>
+          </div>
+          <button class="button button-outline button-small" id="edit-profile" type="button">Ubah profil <span aria-hidden="true">↗</span></button>
+          <p class="settings-footnote">Masuk ke akun TagihanKu untuk menyimpan profil, preferensi, dan data secara pribadi.</p>
+        </article>
+
+        <article class="settings-panel pwa-settings-panel reveal" aria-labelledby="pwa-title">
+          <div class="settings-panel-heading">
+            <span class="settings-icon settings-icon-green" aria-hidden="true">⌁</span>
+            <div><h3 id="pwa-title">Instalasi & penggunaan offline</h3><p>Pasang TagihanKu seperti aplikasi dan buka kembali saat koneksi terputus.</p></div>
+          </div>
+          <div class="pwa-status-grid">
+            <div class="pwa-status-card"><span class="pwa-status-label">Koneksi perangkat</span><strong id="network-status-label" role="status" aria-live="polite">Memeriksa koneksi…</strong></div>
+            <div class="pwa-status-card"><span class="pwa-status-label">Dukungan offline</span><strong id="pwa-status-label" role="status" aria-live="polite">Memeriksa dukungan aplikasi…</strong></div>
+          </div>
+          <div class="pwa-actions">
+            <button class="button button-primary button-small" id="install-app-button" type="button" hidden>Pasang TagihanKu</button>
+            <button class="button button-outline button-small" id="check-app-update" type="button">Periksa pembaruan</button>
+          </div>
+          <p class="settings-footnote">Agar PWA dan cache offline aktif, jalankan melalui HTTPS atau localhost. Operasi akun dan sinkronisasi data memerlukan koneksi internet.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="container help-section section-space" id="bantuan" aria-labelledby="help-title">
+      <div class="help-card reveal">
+        <div class="help-orb" aria-hidden="true"></div>
+        <div class="help-copy"><div class="eyebrow">KAMI SIAP MEMBANTU</div><h2 id="help-title">Ada yang bisa<br>kami bantu?</h2><p>Butuh bantuan mengatur tagihan? Tim bantuan kami siap menemanimu.</p></div>
+        <a class="button button-light" href="mailto:bantuan@tagihanku.example">Hubungi bantuan <span aria-hidden="true">↗</span></a>
+        <div class="help-decoration" aria-hidden="true"><span>?</span><i></i><b></b></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <a class="brand footer-brand" href="#beranda"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M11 7.5h13.2L30 13v19.5H11z"/><path d="M24 7.5V14h6M16 20h9M16 25h9"/></svg></span><span class="brand-name">tagihan<span>ku.</span></span></a>
+      <p>Atur tagihan, nikmati harimu. <span>© 2026 TagihanKu — Proyek demonstrasi.</span></p>
+      <a class="back-to-top" href="#beranda">Kembali ke atas ↑</a>
+    </div>
+  </footer>
+
+  <!-- Dialog login: autentikasi diproses oleh backend Google Apps Script. -->
+  <dialog class="app-dialog" id="login-dialog" aria-labelledby="login-title">
+    <form class="dialog-panel" id="login-form">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Tutup">×</button>
+      <div class="dialog-brand brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M11 7.5h13.2L30 13v19.5H11z"/><path d="M24 7.5V14h6M16 20h9M16 25h9"/></svg></div>
+      <div class="eyebrow eyebrow-muted">SELAMAT DATANG KEMBALI</div><h2 id="login-title">Masuk ke <span>TagihanKu.</span></h2><p class="dialog-intro">Masuk menggunakan akun TagihanKu untuk melihat data pribadi kamu.</p>
+      <label class="field-label" for="login-email">Alamat email</label><input class="form-input" id="login-email" name="email" type="email" placeholder="nama@email.com" autocomplete="username" maxlength="100" required>
+      <label class="field-label" for="login-password">Kata sandi</label><div class="password-wrap"><input class="form-input" id="login-password" name="password" type="password" placeholder="Masukkan kata sandi" minlength="10" maxlength="128" autocomplete="current-password" required><button class="password-toggle" type="button" id="password-toggle" aria-label="Tampilkan kata sandi">Lihat</button></div>
+      <p class="form-hint" id="login-mode-hint">Masuk menggunakan email dan kata sandi akun TagihanKu.</p>
+      <button class="button button-primary dialog-submit" type="submit" id="login-submit">Masuk sekarang <span aria-hidden="true">→</span></button>
+      <p class="dialog-disclaimer" id="login-disclaimer">Jangan bagikan kata sandi kepada siapa pun. TagihanKu tidak akan meminta kata sandi melalui pesan.</p>
+      <p class="auth-switch-copy">Belum punya akun? <button class="text-button" id="register-open" type="button">Buat akun</button></p>
+    </form>
+  </dialog>
+
+  <!-- Form registrasi akun server. -->
+  <dialog class="app-dialog" id="register-dialog" aria-labelledby="register-title">
+    <form class="dialog-panel" id="register-form">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Tutup">×</button>
+      <div class="dialog-brand brand-mark" aria-hidden="true">＋</div>
+      <div class="eyebrow eyebrow-muted">BUAT AKUN TAGIHANKU</div>
+      <h2 id="register-title">Mulai <span>kelola tagihan.</span></h2>
+      <p class="dialog-intro">Buat akun TagihanKu untuk menyimpan tagihan dan riwayat secara pribadi.</p>
+      <label class="field-label" for="register-name">Nama lengkap</label>
+      <input class="form-input" id="register-name" name="name" type="text" minlength="2" maxlength="48" autocomplete="name" required>
+      <label class="field-label" for="register-email">Alamat email</label>
+      <input class="form-input" id="register-email" name="email" type="email" maxlength="100" autocomplete="email" required>
+      <label class="field-label" for="register-password">Kata sandi</label>
+      <input class="form-input" id="register-password" name="password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required>
+      <label class="field-label" for="register-password-confirm">Ulangi kata sandi</label>
+      <input class="form-input" id="register-password-confirm" name="passwordConfirm" type="password" minlength="10" maxlength="128" autocomplete="new-password" required>
+      <p class="form-hint">Minimal 10 karakter, gunakan huruf kecil, huruf besar, dan angka. Email belum diverifikasi melalui OTP.</p>
+      <button class="button button-primary dialog-submit" id="register-submit" type="submit">Buat akun <span aria-hidden="true">→</span></button>
+      <p class="auth-switch-copy">Sudah punya akun? <button class="text-button" id="back-to-login" type="button">Masuk</button></p>
+    </form>
+  </dialog>
+
+  <!-- Dialog profil akun. Perubahan disimpan melalui backend saat pengguna masuk. -->
+  <dialog class="app-dialog" id="profile-dialog" aria-labelledby="profile-title">
+    <form class="dialog-panel profile-dialog-panel" id="profile-form">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Tutup">×</button>
+      <div class="dialog-brand brand-mark" aria-hidden="true">◎</div>
+      <div class="eyebrow eyebrow-muted" id="profile-mode-eyebrow">PROFIL PENGGUNA</div>
+      <h2 id="profile-title">Profil <span>pengguna.</span></h2>
+      <p class="dialog-intro">Perbarui informasi akun TagihanKu.</p>
+      <label class="field-label" for="profile-name-input">Nama tampilan</label>
+      <input class="form-input" id="profile-name-input" name="name" type="text" minlength="2" maxlength="48" autocomplete="name" required>
+      <label class="field-label" for="profile-email-input">Alamat email</label>
+      <input class="form-input" id="profile-email-input" name="email" type="email" maxlength="100" autocomplete="email" required>
+      <p class="form-hint" id="profile-mode-hint">Profil akan disimpan pada sumber akun yang aktif.</p>
+      <button class="button button-primary dialog-submit" type="submit" id="profile-save">Simpan profil <span aria-hidden="true">→</span></button>
+      <button class="button button-outline dialog-submit" id="logout-button" type="button" hidden>Keluar dari akun</button>
+    </form>
+  </dialog>
+
+  <!-- Dialog pembayaran simulasi. Tidak terhubung ke bank, e-wallet, atau payment gateway. -->
+  <dialog class="app-dialog" id="payment-dialog" aria-labelledby="payment-title">
+    <form class="dialog-panel" id="payment-form">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Tutup">×</button>
+      <div class="eyebrow eyebrow-muted">KONFIRMASI PEMBAYARAN</div><h2 id="payment-title">Selesaikan <span>tagihanmu.</span></h2><p class="dialog-intro">Periksa ringkasan sebelum melanjutkan.</p>
+      <div class="payment-summary"><div id="payment-items"></div><div class="payment-total"><span>Total pembayaran</span><strong id="payment-total">Rp 0</strong></div></div>
+      <fieldset class="payment-methods"><legend>Pilih metode pembayaran</legend>
+        <label class="method-option"><input type="radio" name="method" value="QRIS" checked><span class="method-logo method-qris">▦</span><span><strong>QRIS</strong><small>Simulasi pembayaran instan</small></span><i></i></label>
+        <label class="method-option"><input type="radio" name="method" value="Transfer bank"><span class="method-logo method-bank">⇄</span><span><strong>Transfer bank</strong><small>Simulasi transfer virtual</small></span><i></i></label>
+        <label class="method-option"><input type="radio" name="method" value="E-wallet"><span class="method-logo method-wallet">◈</span><span><strong>E-wallet</strong><small>Simulasi dompet digital</small></span><i></i></label>
+      </fieldset>
+      <button class="button button-primary dialog-submit" type="submit">Konfirmasi pembayaran <span aria-hidden="true">→</span></button>
+      <p class="dialog-disclaimer">Simulasi saja. Tidak ada uang yang dipotong dan tidak ada transaksi sungguhan.</p>
+    </form>
+  </dialog>
+
+  <!-- Bukti pembayaran demo: gunakan Cetak / Simpan PDF untuk menyimpan invoice. -->
+  <dialog class="app-dialog receipt-dialog" id="receipt-dialog" aria-labelledby="receipt-title">
+    <section class="receipt-panel" aria-live="polite">
+      <button class="dialog-close receipt-close" type="button" data-close-dialog aria-label="Tutup bukti pembayaran">×</button>
+      <div class="receipt-brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M11 7.5h13.2L30 13v19.5H11z"/><path d="M24 7.5V14h6M16 20h9M16 25h9"/></svg></span><span class="brand-name">tagihan<span>ku.</span></span></div>
+      <div class="receipt-success-mark" aria-hidden="true">✓</div>
+      <p class="receipt-kicker">BUKTI PEMBAYARAN DEMO</p>
+      <h2 id="receipt-title">Pembayaran <span>berhasil!</span></h2>
+      <p class="receipt-intro">Transaksi simulasi berhasil dicatat di browser ini.</p>
+      <div class="receipt-meta-grid">
+        <div><small>Nomor transaksi</small><strong id="receipt-number">—</strong></div>
+        <div><small>Tanggal transaksi</small><strong id="receipt-date">—</strong></div>
+        <div><small>Metode pembayaran</small><strong id="receipt-method">—</strong></div>
+        <div><small>Status</small><strong class="receipt-paid-status" id="receipt-status">Berhasil</strong></div>
+      </div>
+      <div class="receipt-items-wrap"><div class="receipt-items-heading"><span>Rincian layanan</span><span>Jumlah</span></div><div id="receipt-items"></div></div>
+      <div class="receipt-total"><span>Total dibayarkan</span><strong id="receipt-total">Rp 0</strong></div>
+      <p class="receipt-disclaimer">Dokumen ini merupakan bukti dari simulasi proyek TagihanKu, bukan bukti pembayaran resmi dan tidak dapat digunakan sebagai dokumen transaksi keuangan.</p>
+      <div class="receipt-actions"><button class="button button-primary" id="print-receipt" type="button">Cetak / Simpan PDF <span aria-hidden="true">↓</span></button><button class="button button-outline" type="button" data-close-dialog>Tutup</button></div>
+    </section>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><span class="toast-icon">✓</span><span id="toast-message">Berhasil!</span></div>
+</body>
+</html>
